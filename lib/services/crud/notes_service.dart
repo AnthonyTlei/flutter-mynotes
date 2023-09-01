@@ -36,14 +36,17 @@ class NotesService {
   Future<void> _ensureDbIsOpen() async {
     try {
       await open();
-    } on DatabaseAlreadyOpenException {}
+    } on DatabaseAlreadyOpenException {
+      return;
+    }
   }
 
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
   Future<DatabaseUser> getOrCreateUser({required String email}) async {
     try {
-      return await getUser(email: email);
+      final user = await getUser(email: email);
+      return user;
     } on CouldNotFindUser {
       return await createUser(email: email);
     } catch (e) {
@@ -160,8 +163,6 @@ class NotesService {
     final updatesCount = await db.update(
       noteTable,
       {textColumn: text, isSyncedWithCloudColumn: 0},
-      // where: 'id = ?',
-      // whereArgs: [],
     );
     if (updatesCount == 0) {
       throw CouldNotUpdateNote();
@@ -289,7 +290,7 @@ const userIdColumn = 'user_id';
 const textColumn = 'text';
 const isSyncedWithCloudColumn = 'is_synced_with_cloud';
 
-const createUserTable = ''' CREATE TABLE IF NOT EXIST "user" (
+const createUserTable = ''' CREATE TABLE IF NOT EXISTS "user" (
 	      "id"	INTEGER NOT NULL,
 	      "email"	TEXT NOT NULL UNIQUE,
 	      PRIMARY KEY("id")
