@@ -301,7 +301,7 @@ const createUserTable = ''' CREATE TABLE IF NOT EXISTS "user" (
 	      PRIMARY KEY("id")
         ); ''';
 
-const createNoteTable = ''' CREATE TABLE "note" (
+const createNoteTable = ''' CREATE TABLE IF NOT EXISTS "note" (
 	      "id"	INTEGER NOT NULL,
 	      "user_id"	INTEGER NOT NULL,
 	      "text"	TEXT,
